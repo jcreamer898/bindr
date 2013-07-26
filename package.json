@@ -1,0 +1,30 @@
+{
+  "name": "bindr",
+  "version": "0.0.1",
+  "description": "A small JavaScript dependency injection framework.",
+  "main": "Gruntfile.js",
+  "dependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-contrib-nodeunit": "~0.2.0",
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-watch": "~0.5.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jcreamer898/bindr"
+  },
+  "keywords": [
+    "JavaScript",
+    "dependency",
+    "injection",
+    "dependency",
+    "injection"
+  ],
+  "author": "Jonathan Creamer",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "gitHead": "54b894d1d1dd14129aafd1c8120a213997c345b6"
+}
