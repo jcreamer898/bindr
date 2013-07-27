@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Bindr by jcreamer898</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <header>
+        <h1>Bindr</h1>
+        <p>A small JavaScript dependency injection framework.</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/jcreamer898/bindr" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/jcreamer898/bindr/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/jcreamer898/bindr/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h1>
+<a name="bindr" class="anchor" href="#bindr"><span class="octicon octicon-link"></span></a>bindr</h1>
+
+<p>Dependency injection is a software pattern that helps increase the testability of a given class by removing hard coded references to its dependencies.</p>
+
+<p>In other words, take the following code...</p>
+
+<div class="highlight"><pre><span class="kd">function</span> <span class="nx">Car</span><span class="p">(</span><span class="nx">make</span><span class="p">,</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">color</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">make</span> <span class="o">=</span> <span class="nx">make</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">model</span> <span class="o">=</span> <span class="nx">model</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">color</span> <span class="o">=</span> <span class="nx">color</span><span class="p">;</span>
+
+    <span class="k">this</span><span class="p">.</span><span class="nx">service</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Service</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>In the preceding code, <code>Car</code> is now dependent upon <code>Service</code>. This makes it more difficult to unit test the <code>Car</code> in complete isolation. There's no way to create an
+instance of a <code>Car</code> without in turn creating an instance of a <code>Service</code>.</p>
+
+<p>Dependency injection allows for a small bit of configuration that says, 'When a class needs a dependency named x, create an instance of y'.</p>
+
+<p>So, you can now have code that would look like...</p>
+
+<div class="highlight"><pre><span class="kd">function</span> <span class="nx">Car</span><span class="p">(</span><span class="nx">make</span><span class="p">,</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">color</span><span class="p">,</span> <span class="nx">service</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">make</span> <span class="o">=</span> <span class="nx">make</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">model</span> <span class="o">=</span> <span class="nx">model</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">color</span> <span class="o">=</span> <span class="nx">color</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">service</span> <span class="o">=</span> <span class="nx">service</span><span class="p">;</span>
+
+    <span class="nx">bindr</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">bindr</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">'service'</span><span class="p">,</span> <span class="nx">Service</span><span class="p">);</span>
+</pre></div>
+
+<p>You now accept your service as an argument in the constructor. </p>
+
+<p><code>bindr</code> comes in and allows you to switch a dependencies constructor out. In production code, the <code>Car</code> might be dependent upon <code>Service</code>, but when writing unit tests,
+<code>bindr</code> allows you to swap that dependency out for a <code>FakeService</code>.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Car</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'Car'</span><span class="p">),</span>
+    <span class="nx">bindr</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'bindr'</span><span class="p">);</span>
+
+<span class="kd">function</span> <span class="nx">FakeService</span><span class="p">()</span> <span class="p">{}</span>
+
+<span class="nx">bindr</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">'service'</span><span class="p">,</span> <span class="nx">FakeService</span><span class="p">);</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s1">'when a car is created'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">it</span><span class="p">(</span><span class="s1">'should be awesome'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">car</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Car</span><span class="p">();</span>
+
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">car</span><span class="p">.</span><span class="nx">service</span> <span class="k">instanceof</span> <span class="nx">FakeService</span><span class="p">).</span><span class="nx">to</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">ok</span><span class="p">();</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>In the unit tests, you simply bind service to <code>FakeService</code> instead of <code>Service</code> and the dependency will automatically get passed in.</p>
+
+<h3>
+<a name="amd" class="anchor" href="#amd"><span class="octicon octicon-link"></span></a>AMD</h3>
+
+<p>Another nice feature of <code>bindr</code> is its use in AMD projects with Require.js.</p>
+
+<p>In a typical AMD module, you'd have code such as the following...</p>
+
+<div class="highlight"><pre><span class="c1">// car.js</span>
+<span class="nx">define</span><span class="p">([</span><span class="s1">'service'</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">Service</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">function</span> <span class="nx">Car</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">make</span> <span class="o">=</span> <span class="nx">make</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">model</span> <span class="o">=</span> <span class="nx">model</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">color</span> <span class="o">=</span> <span class="nx">color</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">service</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Service</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">Car</span><span class="p">;</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>You can see that when you require <code>car</code>, you automtically end up requiring <code>service</code> as well. <code>bindr</code> allows you to remove that dependency from the <code>car</code> module and swap 
+out what service the car uses.</p>
+
+<div class="highlight"><pre><span class="c1">// main.js</span>
+<span class="nx">require</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
+    <span class="nx">paths</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s1">'bindr'</span><span class="o">:</span> <span class="s1">'../../../dist/bindr'</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">require</span><span class="p">([</span><span class="s1">'bindr'</span><span class="p">,</span> <span class="s1">'car'</span><span class="p">,</span> <span class="s1">'service'</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">bindr</span><span class="p">,</span> <span class="nx">Car</span><span class="p">,</span> <span class="nx">Service</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">bindr</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">'service'</span><span class="p">,</span> <span class="nx">Service</span><span class="p">);</span>
+
+    <span class="kd">var</span> <span class="nx">ford</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Car</span><span class="p">(</span><span class="s1">'Ford'</span><span class="p">,</span> <span class="s1">'Fusion'</span><span class="p">,</span> <span class="s1">'Maroon'</span><span class="p">);</span>
+
+    <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">'car'</span><span class="p">).</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">ford</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// car.js</span>
+<span class="nx">define</span><span class="p">([</span><span class="s1">'bindr'</span><span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">bindr</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">function</span> <span class="nx">Car</span><span class="p">(</span><span class="nx">make</span><span class="p">,</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">color</span><span class="p">,</span> <span class="nx">service</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">make</span> <span class="o">=</span> <span class="nx">make</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">model</span> <span class="o">=</span> <span class="nx">model</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">color</span> <span class="o">=</span> <span class="nx">color</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">service</span> <span class="o">=</span> <span class="nx">service</span><span class="p">;</span>
+
+        <span class="nx">bindr</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">Car</span><span class="p">;</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>This way you can easily swap out the <code>service</code> dependency of the <code>car</code>.</p>
+
+<hr><p>Any feedback would be appreciated!</p>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/jcreamer898">jcreamer898</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
