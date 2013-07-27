@@ -113,6 +113,19 @@ define(['bindr'], function (bindr) {
 
 This way you can easily swap out the `service` dependency of the `car`.
 
+# Installation
+Via NPM...
+
+```bash
+npm install bindr
+```
+
+Via Browser...
+
+```html
+    <script src="bindr.js"></script>
+```
+
 ----------------------------------------------------
 
 Any feedback would be appreciated!
