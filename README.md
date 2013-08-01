@@ -34,7 +34,7 @@ function Car(make, model, color, service) {
 bindr.bind('service', Service);
 ```
 
-You now accept your service as an argument in the constructor. 
+`bindr` will automatically map a registered dependency name that is a property on a class a new instance.
 
 `bindr` comes in and allows you to switch a dependencies constructor out. In production code, the `Car` might be dependent upon `Service`, but when writing unit tests,
 `bindr` allows you to swap that dependency out for a `FakeService`.
