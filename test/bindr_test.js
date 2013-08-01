@@ -70,3 +70,28 @@ exports.whenBindingDependenciesWithFluentApiArgs = function(test) {
     test.equal(ford.service.bar, 'bar', 'should pass bar argument to dependency constructor');
     test.done();
 };
+
+exports.whenSettingArgDependencies = function(test) {
+    function Car(make, model, color, service) {
+        this.make = make;
+        this.model = model;
+        this.color = color;
+        service.foo();
+    }
+
+    function Service() {
+        
+        this.foo = function() {
+
+        };
+    }
+
+    bindr.bind('service').to(Service).asArgument();
+
+    var ford = new Car('Ford', 'Fusion', 'Maroon');
+    
+    test.expect(2);
+    test.equal(ford.service.foo, 'foo', 'should pass foo argument to dependency constructor');
+    test.equal(ford.service.bar, 'bar', 'should pass bar argument to dependency constructor');
+    test.done();
+};

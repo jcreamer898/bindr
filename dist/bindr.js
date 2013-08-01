@@ -1,4 +1,4 @@
-/*! bindr - v0.0.1 - 2013-07-27
+/*! bindr - v0.0.1 - 2013-08-01
 * Copyright (c) 2013 ; Licensed  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -53,6 +53,8 @@ Injection.prototype.withArgs = function(args) {
 // ### Bindr
 // The constructor for the injection container.
 function Bindr() {
+    this.rARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
+
     // Save all of the injections.
     this.injections = {};
 }
@@ -69,11 +71,27 @@ Bindr.prototype.bind = function(from, dependency) {
 // Process all of the incoming arguments to a function and inject 
 // the functions dependencies.
 Bindr.prototype.run = function(obj) {
+    var args = this.getArgs(obj);
+
     for(var prop in obj) {
-        if(obj.hasOwnProperty(prop) && this.injections[prop]) {
+        if((obj.hasOwnProperty(prop) || args[prop]) && this.injections[prop]) {
             obj[prop] = create.apply(this.injections[prop].dependency, this.injections[prop].args);
         }
     }
+};
+
+Bindr.prototype.getArgs = function(obj) {
+    var args = {},
+        ctor = Object.getPrototypeOf(obj).constructor.toString(),
+        matches = [];
+
+    matches = ctor.match(this.rARGS);
+
+    matches.forEach(function() {
+        
+    });
+
+    return args;
 };
 
 // Create a local instance of `Bindr`.
