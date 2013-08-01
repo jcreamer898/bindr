@@ -71,7 +71,7 @@ exports.whenBindingDependenciesWithFluentApiArgs = function(test) {
     test.done();
 };
 
-exports.whenSettingArgDependencies = function(test) {
+exports.whenBindingDependenciesWithFluentApiArgs = function(test) {
     function Car(make, model, color, service) {
         this.make = make;
         this.model = model;
@@ -79,19 +79,21 @@ exports.whenSettingArgDependencies = function(test) {
         service.foo();
     }
 
-    function Service() {
-        
-        this.foo = function() {
+    var fooWasCalled = false;
 
+    function Service() {
+        this.foo = function() {
+            fooWasCalled = true;
         };
     }
 
-    bindr.bind('service').to(Service).asArgument();
+    var Car = bindr(Car);
+    
+    bindr.bind('service').to(Service);
 
     var ford = new Car('Ford', 'Fusion', 'Maroon');
-    
-    test.expect(2);
-    test.equal(ford.service.foo, 'foo', 'should pass foo argument to dependency constructor');
-    test.equal(ford.service.bar, 'bar', 'should pass bar argument to dependency constructor');
+
+    test.expect(1);
+    test.ok(fooWasCalled, "the service should be injected");
     test.done();
 };
