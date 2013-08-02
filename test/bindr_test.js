@@ -1,4 +1,4 @@
-var bindr = require('../lib/bindr.js');
+var bindr = require('../dist/bindr.min.js');
 
 exports.whenBindingDependencies = function(test){
     function Car(make, model, color, service) {
@@ -77,6 +77,7 @@ exports.whenBindingDependenciesWithFluentApiArgs = function(test) {
         this.model = model;
         this.color = color;
         service.foo();
+        console.log(service);
     }
 
     var fooWasCalled = false;
@@ -93,7 +94,9 @@ exports.whenBindingDependenciesWithFluentApiArgs = function(test) {
 
     var ford = new Car('Ford', 'Fusion', 'Maroon');
 
-    test.expect(1);
+    test.expect(2);
     test.ok(fooWasCalled, "the service should be injected");
+    test.ok(ford.service instanceof Service, 'should be a service');
+
     test.done();
 };
