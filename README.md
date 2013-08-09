@@ -127,6 +127,12 @@ Via Browser...
     <script src="bindr.js"></script>
 ```
 
+Via Bower...
+
+```bash
+bower install bindr --save
+```
+
 ----------------------------------------------------
 
 Any feedback would be appreciated!
