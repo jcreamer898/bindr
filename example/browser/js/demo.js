@@ -1,21 +1,37 @@
-function Model() {
-    bindr(this, arguments);
+function Car(engine, dashboard) {
+    this.engine = engine;
+    this.dashboard = dashboard;
 }
 
-function Car(make, model, color, service) {
-    this.make = make;
-    this.model = model;
-    this.color = color;
-    this.service = service;
-    
-    bindr(this, arguments);
+function Engine() {}
+
+function Dashboard(ac, radio) {
+    this.ac = ac;
+    this.radio = radio;
 }
 
-function Service() {}
-function FakeService() {}
+function Ac () {}
+function Radio (stereo, cd) {
+    this.stereo = stereo;
+    this.cd = cd;
+}
 
-bindr.bind('service', FakeService);
+function Stereo() {}
+function Cd() {}
 
-var ford = new Car('Ford', 'Fusion', 'Maroon');
+Car = bindr(Car, ['engine', 'dashboard']);
+Dashboard = bindr(Dashboard, ['ac', 'radio']);
+Radio = bindr(Radio, ['stereo', 'cd']);
+
+bindr.bind({
+    "engine": Engine,
+    "dashboard": Dashboard,
+    "ac": Ac,
+    "radio": Radio,
+    "stereo": Stereo,
+    "cd": Cd
+});
+
+var ford = new Car();
 
 document.getElementById('car').innerHTML = JSON.stringify(ford, null, 4);

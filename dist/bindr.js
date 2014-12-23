@@ -1,5 +1,5 @@
-/*! bindr - v0.0.1 - 2013-07-27
-* Copyright (c) 2013 ; Licensed  */
+/*! bindr - v0.0.1 - 2014-12-23
+* Copyright (c) 2014 ; Licensed  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
@@ -62,29 +62,97 @@ function Bindr() {
 // 
 //      bindr.bind('service', Service);
 Bindr.prototype.bind = function(from, dependency) {
+    var injection;
+
+    if (typeof from === "object") {
+        for(injection in from) {
+            if (from.hasOwnProperty(injection)) {
+                this.injections[injection] = new Injection(injection, from[injection]);
+            }
+        }
+        return;
+    }
+
     this.injections[from] = new Injection(from, dependency);
     return this.injections[from];
 };
 
 // Process all of the incoming arguments to a function and inject 
 // the functions dependencies.
-Bindr.prototype.run = function(obj) {
-    for(var prop in obj) {
-        if(obj.hasOwnProperty(prop) && this.injections[prop]) {
-            obj[prop] = create.apply(this.injections[prop].dependency, this.injections[prop].args);
+Bindr.prototype.run = function(obj, args) {
+    var dependency, i, 
+        name =  Object.getPrototypeOf(obj).constructor.name;
+    
+    for(i = 0; i < obj.$binder.constructorArgs.length; i++) {
+        dependency = obj.$binder.deps[i];
+        
+        if(this.injections[dependency]) {
+            Array.prototype.splice.call(args, i, 0, create.apply(
+                this.injections[dependency].dependency, 
+                this.injections[dependency].args
+            ));
+
+            obj.$binder.dependsOn.push(dependency);
+            dependencyGraph[name] = dependencyGraph[name] || {};
+            dependencyGraph[name][dependency] = dependencyGraph[name][dependency] || 
+                dependencyGraph[this.injections[dependency].dependency.prototype.constructor.name] || {};
         }
     }
+};
+
+var rArgs = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
+
+var dependencyGraph = {};
+
+// Setup a constructor for DI
+Bindr.prototype.setupConstructor = function(fn, deps) {
+    var Injectable = function Injectable() {
+        _bindr.run(this, arguments);
+
+        Injectable.prototype.constructor.apply(this, arguments);
+    };
+
+    var matches = rArgs.exec(fn.toString()),
+        constructorArgs;
+
+    if (matches.length) {
+        constructorArgs = matches[1].split(",");
+    }
+
+    Injectable.prototype.constructor = fn;
+    Injectable.prototype.$binder = {
+        name: fn.prototype.constructor.name,
+        deps: deps,
+        constructorArgs: constructorArgs,
+        dependsOn: []
+    };
+
+    return Injectable;
+};
+
+Bindr.prototype.trace = function(name) {
+    if (typeof name === "object") {
+        name = Object.getPrototypeOf(name).constructor.name;
+        return dependencyGraph[name];
+    }
+
+    return dependencyGraph;
+};
+
+Bindr.prototype.reset = function() {
+    this.injections = {};
+    dependencyGraph = {};
 };
 
 // Create a local instance of `Bindr`.
 var _bindr = new Bindr();
 
-// Return this function to the window. This allows for aliasing `Bindr.run` to just `bindr()`.
+// Return this function to the window. This allows for aliasing `Bindr.setupConstructor` to just `bindr()`.
 // 
 //      bindr(this, arguments);
 var bindr = function() {
     if (arguments.length === 2) {
-        return _bindr.run.apply(_bindr, arguments);
+        return _bindr.setupConstructor.apply(_bindr, arguments);
     }
 
     return this;
@@ -92,6 +160,8 @@ var bindr = function() {
 
 // Setup an API for the `bind` method.
 bindr.bind = _bindr.bind.bind(_bindr);
+bindr.trace = _bindr.trace.bind(_bindr);
+bindr.reset = _bindr.reset.bind(_bindr);
 
 return bindr;
 

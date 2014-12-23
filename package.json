@@ -1,6 +1,6 @@
 {
   "name": "bindr",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "description": "A small JavaScript dependency injection framework.",
   "main": "Gruntfile.js",
   "dependencies": {},
